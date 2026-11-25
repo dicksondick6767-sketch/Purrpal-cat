@@ -497,7 +497,6 @@
 
     const $ = (id) => document.getElementById(id);
 
-    // Simple Web Audio Purr/Meow chime
     function playMeow(freq = 540) {
       if (!state.sound) return;
       try {
@@ -569,21 +568,20 @@
       return div;
     }
 
-    // Load Transformers.js Small Language Model (SmolLM2-135M-Instruct)
     $('loadAiBtn').addEventListener('click', async () => {
       if (state.aiGenerator || state.aiLoading) return;
       state.aiLoading = true;
       $('loadAiBtn').disabled = true;
       $('loadAiBtn').textContent = '⏳ Downloading...';
       $('aiStatusText').textContent = '🧠 Loading SmolLM2 AI Model...';
-      $('aiSubText').textContent = 'First download (~118 MB) saves in browser cache for instant offline use later!';
+      $('aiSubText').textContent = 'First download saves in browser cache for instant offline use later!';
 
       try {
         state.aiGenerator = await pipeline(
           'text-generation',
           'HuggingFaceTB/SmolLM2-135M-Instruct',
           {
-            dtype: 'q4f16',
+            dtype: 'q4',
             progress_callback: (p) => {
               if (p.status === 'progress' && p.total) {
                 const pct = Math.round((p.loaded / p.total) * 100);
@@ -650,29 +648,42 @@
         const messages = [
           {
             role: 'system',
-            content: `You are ${state.catName}, a cute talking pet cat with a "${state.personality}" personality. Your human's name is ${state.userName}. Keep replies short (1-3 sentences), playful, warm, and include cute cat actions in *asterisks* plus occasional "meow" or "mrrp". Never break character.`
+            content: `You are ${state.catName}, a cute talking pet cat with a "${state.personality}" personality. Your human's name is ${state.userName}. Keep replies short (1-2 sentences), playful, warm, and include cute cat actions in *asterisks* plus "meow" or "mrrp".`
           },
           ...state.history.slice(-4),
           { role: 'user', content: userText }
         ];
 
         const output = await state.aiGenerator(messages, {
-          max_new_tokens: 85,
-          temperature: 0.75,
-          do_sample: true
+          max_new_tokens: 75,
+          temperature: 0.7,
+          do_sample: true,
+          return_full_text: false
         });
 
-        const generated = output[0].generated_text;
-        const reply = Array.isArray(generated)
-          ? generated[generated.length - 1].content
-          : String(generated);
+        let reply = '';
+        const generated = output?.[0]?.generated_text;
+        if (typeof generated === 'string') {
+          reply = generated;
+        } else if (Array.isArray(generated)) {
+          const lastMsg = generated[generated.length - 1];
+          reply = typeof lastMsg === 'string' ? lastMsg : (lastMsg?.content || '');
+        }
+
+        reply = reply.replace(/<\|.*?\|>/g, '').trim();
+
+        if (!reply || reply.length < 3 || /^-?\d+$/.test(reply)) {
+          throw new Error('Invalid model output: ' + reply);
+        }
 
         thinking.remove();
         state.history.push({ role: 'user', content: userText }, { role: 'assistant', content: reply });
         playMeow(600);
-        appendMsg('cat', reply.trim());
+        appendMsg('cat', reply);
       } catch (e) {
+        console.warn('AI fallback triggered:', e);
         thinking.remove();
+        playMeow(560);
         appendMsg('cat', fallbackReply(userText));
       }
     }
@@ -750,7 +761,6 @@
       handleChat(val);
     });
 
-    // Customize Modal
     const openModal = () => {
       $('inputUserName').value = state.userName;
       $('inputCatName').value = state.catName;
