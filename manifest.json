@@ -1,0 +1,17 @@
+{
+  "name": "PurrPal - AI Cat Companion",
+  "short_name": "PurrPal",
+  "start_url": "/Purrpal-cat/",
+  "scope": "/Purrpal-cat/",
+  "display": "standalone",
+  "background_color": "#FDF8F2",
+  "theme_color": "#FDF8F2",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23FDF8F2'/%3E%3Cpath d='M130 220 L110 100 L210 165 Z' fill='%23E88D4F'/%3E%3Cpath d='M382 220 L402 100 L302 165 Z' fill='%23E88D4F'/%3E%3Ccircle cx='256' cy='280' r='145' fill='%23F4A261'/%3E%3Ccircle cx='205' cy='265' r='18' fill='%232B2D42'/%3E%3Ccircle cx='307' cy='265' r='18' fill='%232B2D42'/%3E%3Ccircle cx='211' cy='259' r='6' fill='%23FFFFFF'/%3E%3Ccircle cx='313' cy='259' r='6' fill='%23FFFFFF'/%3E%3Cpolygon points='256,292 242,308 270,308' fill='%23E76F51'/%3E%3Cpath d='M226 322 Q241 338 256 322 Q271 338 286 322' stroke='%232B2D42' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
